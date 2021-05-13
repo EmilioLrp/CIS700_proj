@@ -4,7 +4,6 @@ import random
 # range of random integer
 up_bound = 32
 low_bound = -32
-ª
 eos = "EOS"
 
 
