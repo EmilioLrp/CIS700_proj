@@ -48,7 +48,7 @@ def mss_generator(data_size, file, data_length):
 
 
 # brute force solution
-def check_sum(arr, out):
+def check_sum(arr, out, index):
     seq = []
     for num in arr:
         if num == soc:
@@ -62,10 +62,8 @@ def check_sum(arr, out):
             curr += seq[j]
             if curr > maximum:
                 maximum = curr
-    if out == maximum:
-        print(True)
-    else:
-        print(False)
+    if out != maximum:
+        print("false at index {}".format(index))
 
 
 def check(file):
@@ -73,7 +71,7 @@ def check(file):
         (x, y) = pk.load(f)
     length = len(x)
     for i in range(length):
-        check_sum(x[i], y[i])
+        check_sum(x[i], y[i], i)
 
 
 if __name__ == '__main__':
