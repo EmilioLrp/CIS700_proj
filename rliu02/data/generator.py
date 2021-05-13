@@ -4,8 +4,7 @@ import random
 # range of random integer
 up_bound = 32
 low_bound = -32
-
-soc = "SOC"
+eos = "EOS"
 
 
 # DP solution
@@ -30,8 +29,8 @@ def input_generator(length):
 
 def fill_arr(arr, length):
     while len(arr) < length:
-        arr.append(soc)
-    arr.append(soc)
+        arr.append(eos)
+    arr.append(eos)
 
 
 def mss_generator(data_size, file, data_length):
@@ -51,7 +50,7 @@ def mss_generator(data_size, file, data_length):
 def check_sum(arr, out, index):
     seq = []
     for num in arr:
-        if num == soc:
+        if num == eos:
             break
         seq.append(num)
 
