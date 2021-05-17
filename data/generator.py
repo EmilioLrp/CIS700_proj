@@ -72,6 +72,7 @@ def check(file):
     length = len(x)
     for i in range(length):
         check_sum(x[i], y[i], i)
+        # print("{}, {}".format(len(x[i]), len(y[i])))
 
 
 
