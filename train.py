@@ -15,7 +15,10 @@ import argcomplete
 import torch
 import numpy as np
 
+import copy
 import pickle as pk
+
+from data.encoder import encoder as enc
 
 LOGGER = logging.getLogger(__name__)
 
@@ -160,8 +163,17 @@ def evaluate(net, criterion, X, Y):
 
     return result
 
+# modification
+def init_memory(lower_bound, upper_bound):
+    # @TODO modification according to encoder
+    max_num = upper_bound - lower_bound + 1
+    memory = encoder(lower_bound,lower_bound, upper_bound)
+    for i in range(lower_bound+1, max_num+1):
+        temp = encoder(i,lower_bound, upper_bound)
+        memory = torch.cat((memory,temp),0)
+    return memory
 
-def train_model(model, args):
+def train_model(model, args, memory):
     num_batches = model.params.num_batches
     batch_size = model.params.batch_size
 
@@ -174,9 +186,11 @@ def train_model(model, args):
     start_ms = get_ms()
 
     for batch_num, x, y in model.dataloader:
-        # @TODO: encode x, y
         # @TODO: create a deep copy of memory, mem_batch
         # @TODO: before train, set model's memory to mem_batch
+
+        mem_batch = copy.deepcopy(memory)
+        model.memory.set_memory(mem_batch)
         loss, cost = train_batch(model.net, model.criterion, model.optimizer, x, y)
         losses += [loss]
         costs += [cost]
@@ -199,8 +213,6 @@ def train_model(model, args):
         if (args.checkpoint_interval != 0) and (batch_num % args.checkpoint_interval == 0):
             save_checkpoint(model.net, model.params.name, args,
                             batch_num, losses, costs, seq_lengths)
-
-    # @TODO save losses to a file
 
     LOGGER.info("Done training.")
 
@@ -280,10 +292,12 @@ def main():
 
     # Initialize the model
     model = init_model(args)
-    # @TODO init memory
 
+    lower_bound = -11
+    upper_bound = 100
+    memory = init_memory(lower_bound, upper_bound)
     LOGGER.info("Total number of parameters: %d", model.net.calculate_num_params())
-    train_model(model, args)
+    train_model(model, args, memory)
 
 
 if __name__ == '__main__':

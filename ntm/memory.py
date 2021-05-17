@@ -36,11 +36,19 @@ class NTMMemory(nn.Module):
         stdev = 1 / (np.sqrt(N + M))
         nn.init.uniform_(self.mem_bias, -stdev, stdev)
 
+
+
+    # modification
+    def set_memory(self, memory):
+        """init memory"""
+        self.memory = memory
+        self.init_mem = memory
+
     def reset(self, batch_size):
         """Initialize memory from bias, for start-of-sequence."""
         #@TODO: this function may need modifications
         self.batch_size = batch_size
-        self.memory = self.mem_bias.clone().repeat(batch_size, 1, 1)
+        self.memory = self.init_mem
 
     def size(self):
         return self.N, self.M

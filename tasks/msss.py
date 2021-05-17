@@ -7,13 +7,15 @@ import numpy as np
 import pickle as pk
 
 from ntm.aio import EncapsulatedNTM
-
+from data.encoder import encoder
 
 # Generator of randomized test sequences
 def dataloader(num_batches,
                batch_size,
                data,
-               pointer):
+               pointer,
+               seq_length,
+               seq_width):
     """Generator of random sequences for the copy task.
 
     Creates random batches of "bits" sequences.
@@ -23,6 +25,7 @@ def dataloader(num_batches,
 
     :param num_batches: Total number of batches to generate.
     :param batch_size: Batch size.
+    :param seq_width: The width of each item in the sequence.
 
     NOTE: The input width is `seq_width + 1`, the additional input
     contain the delimiter.
@@ -40,6 +43,8 @@ def dataloader(num_batches,
     #     outp = seq.clone()
     #
     #     yield batch_num + 1, inp.float(), outp.float()
+
+    # @TODO dimension checking!!!
     (x, y) = data
     length = len(x)
     for batch_num in range(num_batches):
@@ -47,6 +52,10 @@ def dataloader(num_batches,
             if pointer >= length:
                 break
             else:
+                inp = torch.zeros(seq_length, batch_size, seq_width)
+                inp[:seq_length, :, :seq_width] = encode(x[pointer])
+                oup = torch.zeros(seq_length, batch_size, seq_width)
+                oup[:seq_length, :, :seq_width] = encode(y[pointer])
                 yield batch_num + 1, torch.tensor(x[pointer]).float(), torch.tensor(y[pointer]).float()
                 pointer += 1
         # if pointer >= length:
@@ -55,6 +64,12 @@ def dataloader(num_batches,
         #     pointer += 1
         #     yield batch_num + 1, x[pointer - 1], y[pointer - 1]
 
+
+def encode(inarr):
+    result = []
+    for element in inarr:
+        result.append(encoder(element, 11, 7))
+    return torch.stack(result, dim=0)
 
 @attrs
 class MSSSParams(object):
@@ -128,7 +143,8 @@ class MSSSModelTraining(object):
         # return dataloader(self.params.num_batches, self.params.batch_size,
         #                   self.params.sequence_width,
         #                   self.params.sequence_min_len, self.params.sequence_max_len)
-        return dataloader(self.params.num_batches, self.params.batch_size, self.train_data, self.trained_index)
+        return dataloader(self.params.num_batches, self.params.batch_size, self.train_data, self.trained_index,
+                          self.params.seq_length, self.params.sequence_width)
 
     @criterion.default
     def default_criterion(self):
