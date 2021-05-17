@@ -4,8 +4,7 @@ import random
 # range of random integer
 up_bound = 10
 low_bound = -10
-eos = "EOS"
-
+eos = -11
 
 # DP solution
 def mss(arr):
