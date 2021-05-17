@@ -19,7 +19,6 @@ import pickle as pk
 
 LOGGER = logging.getLogger(__name__)
 
-
 # from tasks.copytask import CopyTaskModelTraining, CopyTaskParams
 # from tasks.repeatcopytask import RepeatCopyTaskModelTraining, RepeatCopyTaskParams
 from tasks.msss import MSSSModelTraining, MSSSParams
@@ -29,7 +28,6 @@ TASKS = {
     # 'repeat-copy': (RepeatCopyTaskModelTraining, RepeatCopyTaskParams)
     'msss': (MSSSModelTraining, MSSSParams)
 }
-
 
 # Default values for program arguments
 RANDOM_SEED = 1000
@@ -60,7 +58,7 @@ def progress_clean():
 
 def progress_bar(batch_num, report_interval, last_loss):
     """Prints the progress until the next report."""
-    progress = (((batch_num-1) % report_interval) + 1) / report_interval
+    progress = (((batch_num - 1) % report_interval) + 1) / report_interval
     fill = int(progress * 40)
     print("\r[{}{}]: {} (Loss: {:.4f})".format(
         "=" * fill, " " * (40 - fill), batch_num, last_loss), end='')
@@ -163,7 +161,7 @@ def evaluate(net, criterion, X, Y):
     return result
 
 
-def train_model(model, args, memory):
+def train_model(model, args):
     num_batches = model.params.num_batches
     batch_size = model.params.batch_size
 
@@ -268,11 +266,6 @@ def init_logging():
                         level=logging.DEBUG)
 
 
-def load_data():
-    with open("tasks/train.txt", "rb") as f:
-        train_data = pk.load(f)
-    return train_data
-
 def main():
     init_logging()
 
@@ -284,7 +277,6 @@ def main():
 
     # Initialize the model
     model = init_model(args)
-    data = load_data()
     # @TODO init memory
 
     LOGGER.info("Total number of parameters: %d", model.net.calculate_num_params())
