@@ -43,11 +43,17 @@ def dataloader(num_batches,
     (x, y) = data
     length = len(x)
     for batch_num in range(num_batches):
-        if pointer >= length:
-            break
-        else:
-            pointer += 1
-            yield batch_num + 1, x[pointer - 1], y[pointer - 1]
+        for i in range(batch_size):
+            if pointer >= length:
+                break
+            else:
+                yield batch_num + 1, torch.tensor(x[pointer]).float(), torch.tensor(y[pointer]).float()
+                pointer += 1
+        # if pointer >= length:
+        #     break
+        # else:
+        #     pointer += 1
+        #     yield batch_num + 1, x[pointer - 1], y[pointer - 1]
 
 
 @attrs
@@ -57,7 +63,9 @@ class MSSSParams(object):
     N = 111
     seq_length = 6  # number of elements in the input sequence
     elem_size = 7  # length of the vector of each element in the input sequence
-    batch_num = 10000
+    total_data_size = 10000
+    batch_len = 1
+    batch_num = total_data_size / batch_len
 
     name = attrib(default="msss-task")
     controller_size = attrib(default=100, convert=int)
@@ -69,7 +77,7 @@ class MSSSParams(object):
     memory_n = attrib(default=N, convert=int)
     memory_m = attrib(default=M, convert=int)
     num_batches = attrib(default=batch_num, convert=int)
-    batch_size = attrib(default=1, convert=int)
+    batch_size = attrib(default=batch_len, convert=int)
     rmsprop_lr = attrib(default=1e-4, convert=float)
     rmsprop_momentum = attrib(default=0.9, convert=float)
     rmsprop_alpha = attrib(default=0.95, convert=float)
@@ -124,11 +132,12 @@ class MSSSModelTraining(object):
 
     @criterion.default
     def default_criterion(self):
-        return nn.BCELoss()
+        return nn.MSELoss(reduction='mean')
 
     @optimizer.default
     def default_optimizer(self):
-        return optim.RMSprop(self.net.parameters(),
-                             momentum=self.params.rmsprop_momentum,
-                             alpha=self.params.rmsprop_alpha,
-                             lr=self.params.rmsprop_lr)
+        # return optim.RMSprop(self.net.parameters(),
+        #                      momentum=self.params.rmsprop_momentum,
+        #                      alpha=self.params.rmsprop_alpha,
+        #                      lr=self.params.rmsprop_lr)
+        return optim.Adam(self.net.parameters())

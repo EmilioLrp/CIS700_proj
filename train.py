@@ -110,7 +110,7 @@ def train_batch(net, criterion, optimizer, X, Y):
 
     loss = criterion(y_out, Y)
     loss.backward()
-    clip_grads(net)
+    # clip_grads(net)
     optimizer.step()
 
     y_out_binarized = y_out.clone().data
@@ -174,6 +174,7 @@ def train_model(model, args):
     start_ms = get_ms()
 
     for batch_num, x, y in model.dataloader:
+        # @TODO: encode x, y
         # @TODO: create a deep copy of memory, mem_batch
         # @TODO: before train, set model's memory to mem_batch
         loss, cost = train_batch(model.net, model.criterion, model.optimizer, x, y)
@@ -198,6 +199,8 @@ def train_model(model, args):
         if (args.checkpoint_interval != 0) and (batch_num % args.checkpoint_interval == 0):
             save_checkpoint(model.net, model.params.name, args,
                             batch_num, losses, costs, seq_lengths)
+
+    # @TODO save losses to a file
 
     LOGGER.info("Done training.")
 
