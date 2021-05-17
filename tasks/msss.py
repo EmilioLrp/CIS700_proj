@@ -4,6 +4,7 @@ import torch
 from torch import nn
 from torch import optim
 import numpy as np
+import pickle as pk
 
 from ntm.aio import EncapsulatedNTM
 
@@ -89,6 +90,11 @@ class MSSSParams(object):
 # You may skip this alltogether, and use `:class:CopyTaskNTM` directly.
 #
 
+def load_data():
+    with open("data/train.txt", "rb") as f:
+        train_data = pk.load(f)
+    return train_data
+
 @attrs
 class MSSSModelTraining(object):
     params = attrib(default=Factory(MSSSParams))
@@ -96,7 +102,7 @@ class MSSSModelTraining(object):
     dataloader = attrib()
     criterion = attrib()
     optimizer = attrib()
-    train_data = None
+    train_data = load_data()
     trained_index = 0
 
     @net.default
