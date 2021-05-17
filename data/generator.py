@@ -2,8 +2,8 @@ import pickle as pk
 import random
 
 # range of random integer
-up_bound = 32
-low_bound = -32
+up_bound = 10
+low_bound = -10
 eos = "EOS"
 
 
@@ -16,7 +16,7 @@ def mss(arr):
         curr = max(dp[i - 1] + arr[i], arr[i])
         dp.append(curr)
         result = max(result, curr)
-    return result
+    return [result]
 
 
 def input_generator(length):
@@ -40,6 +40,7 @@ def mss_generator(data_size, file, data_length):
         arr = input_generator(data_length)
         result = mss(arr)
         fill_arr(arr, data_length)
+        fill_arr(result, data_length)
         input_data.append(arr)
         output_data.append(result)
     with open(file, "wb") as f:
@@ -53,7 +54,7 @@ def check_sum(arr, out, index):
         if num == eos:
             break
         seq.append(num)
-
+    res = out[0]
     maximum = seq[0]
     for i in range(len(seq)):
         curr = 0
@@ -61,7 +62,7 @@ def check_sum(arr, out, index):
             curr += seq[j]
             if curr > maximum:
                 maximum = curr
-    if out != maximum:
+    if res != maximum:
         print("false at index {}".format(index))
 
 
@@ -71,12 +72,17 @@ def check(file):
     length = len(x)
     for i in range(length):
         check_sum(x[i], y[i], i)
+        # print("{}, {}".format(len(x[i]), len(y[i])))
+
 
 
 if __name__ == '__main__':
     train_file = "train.txt"
     test_file = "test.txt"
     test_file_var = "test_var.txt"
-    mss_generator(10000, train_file, 10)
-    mss_generator(1000, test_file, 10)
-    mss_generator(1000, test_file_var, 20)
+    mss_generator(10000, train_file, 5)
+    mss_generator(1000, test_file, 5)
+    mss_generator(1000, test_file_var, 10)
+    # check(train_file)
+    # check(test_file)
+    # check(test_file_var)
