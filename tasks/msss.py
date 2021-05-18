@@ -1,13 +1,15 @@
 """MSSS NTM model."""
-from attr import attrs, attrib, Factory
-import torch
-from torch import nn
-from torch import optim
-import numpy as np
 import pickle as pk
 
-from ntm.aio import EncapsulatedNTM
+import torch
+from attr import attrs, attrib, Factory
+from torch import nn
+from torch import optim
+
+from data.config import Config
 from data.encoder import encoder
+from ntm.aio import EncapsulatedNTM
+
 
 # Generator of randomized test sequences
 def dataloader(num_batches,
@@ -66,9 +68,10 @@ def dataloader(num_batches,
 
 
 def encode(inarr):
+    conf = Config()
     result = []
     for element in inarr:
-        result.append(encoder(element, 11, 7))
+        result.append(encoder(element, conf.threashold, conf.encode_length))
     return torch.stack(result, dim=0)
 
 @attrs

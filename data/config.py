@@ -4,6 +4,8 @@ class Config():
         self.low_bound = -10
         self.eos = -11
         self.input_size = 5
+        self.encode_length = 7
+        self.threashold = 11
 
     def output_range(self):
         # @TODO: problem specified, may need change
