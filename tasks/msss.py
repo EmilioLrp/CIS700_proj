@@ -54,18 +54,15 @@ def dataloader(num_batches,
             if pointer >= length:
                 break
             else:
-                inp = torch.zeros(seq_length, batch_size, seq_width)
-                inp[:seq_length, :, :seq_width] = encode(x[pointer])
-                oup = torch.zeros(seq_length, batch_size, seq_width)
-                oup[:seq_length, :, :seq_width] = encode(y[pointer])
-                yield batch_num + 1, torch.tensor(x[pointer]).float(), torch.tensor(y[pointer]).float()
+                inp = encode(x[pointer]).unsqueeze(dim=1)
+                oup = encode(y[pointer]).unsqueeze(dim=1)
+                yield batch_num + 1, inp.float(), oup.float()
                 pointer += 1
         # if pointer >= length:
         #     break
         # else:
         #     pointer += 1
         #     yield batch_num + 1, x[pointer - 1], y[pointer - 1]
-
 
 def encode(inarr):
     conf = Config()
