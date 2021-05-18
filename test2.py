@@ -25,12 +25,12 @@ LOGGER = logging.getLogger(__name__)
 
 # from tasks.copytask import CopyTaskModelTraining, CopyTaskParams
 # from tasks.repeatcopytask import RepeatCopyTaskModelTraining, RepeatCopyTaskParams
-from tasks.msss import MSSSModelTraining, MSSSParams
+from tasks.msss import MSSSModelTesting2, MSSSParams
 
 TASKS = {
     # 'copy': (CopyTaskModelTraining, CopyTaskParams),
     # 'repeat-copy': (RepeatCopyTaskModelTraining, RepeatCopyTaskParams)
-    'msss': (MSSSModelTraining, MSSSParams)
+    'msss': (MSSSModelTesting2, MSSSParams)
 }
 
 # Default values for program arguments
@@ -126,45 +126,6 @@ def train_batch(net, criterion, optimizer, X, Y):
     return loss.item(), cost.item() / batch_size
 
 
-def evaluate(net, criterion, X, Y):
-    """Evaluate a single batch (without training)."""
-    inp_seq_len = X.size(0)
-    outp_seq_len, batch_size, _ = Y.size()
-
-    # New sequence
-    net.init_sequence(batch_size)
-
-    # Feed the sequence + delimiter
-    states = []
-    for i in range(inp_seq_len):
-        o, state = net(X[i])
-        states += [state]
-
-    # Read the output (no input given)
-    y_out = torch.zeros(Y.size())
-    for i in range(outp_seq_len):
-        y_out[i], state = net()
-        states += [state]
-
-    loss = criterion(y_out, Y)
-
-    y_out_binarized = y_out.clone().data
-    y_out_binarized.apply_(lambda x: 0 if x < 0.5 else 1)
-
-    # The cost is the number of error bits per sequence
-    cost = torch.sum(torch.abs(y_out_binarized - Y.data))
-
-    result = {
-        'loss': loss.data[0],
-        'cost': cost / batch_size,
-        'y_out': y_out,
-        'y_out_binarized': y_out_binarized,
-        'states': states
-    }
-
-    return result
-
-# modification
 
 
 def train_model(model, args):
@@ -175,19 +136,12 @@ def train_model(model, args):
                 num_batches, batch_size)
 
     losses = []
-    epoch_losses = []
     costs = []
     seq_lengths = []
     start_ms = get_ms()
 
-
-    conf = Config()
-    for epoch in range(conf.epoch):
+    for epoch in range(1):
         for batch_num, x, y in model.dataloader:
-            # @TODO: create a deep copy of memory, mem_batch
-            # @TODO: before train, set model's memory to mem_batch
-
-
             loss, cost = train_batch(model.net, model.criterion, model.optimizer, x, y)
             losses += [loss]
             costs += [cost]
@@ -207,14 +161,9 @@ def train_model(model, args):
                 start_ms = get_ms()
 
             # Checkpoint
-            '''
             if (args.checkpoint_interval != 0) and (batch_num % args.checkpoint_interval == 0):
                 save_checkpoint(model.net, model.params.name, args,
                                 batch_num, losses, costs, seq_lengths)
-            '''
-        epoch_losses += [np.array(losses[-model.params.num_batches:]).mean()]
-    with open('train_loss.txt', "wb") as f:
-        pk.dump((losses, epoch_losses), f)
     torch.save(model.net.state_dict(), './model/testmodel')
     LOGGER.info("Done training.")
 
@@ -282,6 +231,30 @@ def init_logging():
     logging.basicConfig(format='[%(asctime)s] [%(levelname)s] [%(name)s]  %(message)s',
                         level=logging.DEBUG)
 
+def test(model, args):
+    num_batches = model.params.num_batches
+    batch_size = model.params.batch_size
+
+    LOGGER.info("Training model for %d batches (batch_size=%d)...",
+                num_batches, batch_size)
+
+    losses = []
+    costs = []
+    seq_lengths = []
+    start_ms = get_ms()
+    for batch_num, x, y in model.dataloader:
+        inp_seq_len = x.size(0)
+        outp_seq_len, batch_size, _ = y.size()
+        model.net.init_sequence(batch_size)
+
+        y_out = torch.zeros(y.size())
+        for i in range(outp_seq_len):
+            y_out[i], _ = model.net(x[i])
+
+        loss = model.criterion(y_out, y)
+        losses += [loss]
+    with open('test_loss2ª.txt', "wb") as f:
+        pk.dump(losses, f)
 
 def main():
     init_logging()
@@ -294,10 +267,8 @@ def main():
 
     # Initialize the model
     model = init_model(args)
-
-
-    LOGGER.info("Total number of parameters: %d", model.net.calculate_num_params())
-    train_model(model, args)
+    model.net.load_state_dict(torch.load('./model/testmodel'))
+    test(model, args)
 
 
 if __name__ == '__main__':

@@ -78,7 +78,7 @@ class MSSSParams(object):
     conf = Config()
     M = conf.get_encoding_length()
     m_min, m_max = conf.output_range()
-    N = m_max - m_min
+    N = m_max - m_min + 1
     seq_length = conf.get_input_size() + 1  # number of elements in the input sequence
     elem_size = conf.get_encoding_length()  # length of the vector of each element in the input sequence
     total_data_size = conf.get_train_data_size()
@@ -116,7 +116,7 @@ class MSSSParams(object):
 # You may skip this alltogether, and use `:class:CopyTaskNTM` directly.
 #
 
-def load_data():
+def load_train_data():
     with open("data/train.txt", "rb") as f:
         train_data = pk.load(f)
     return train_data
@@ -128,7 +128,7 @@ class MSSSModelTraining(object):
     dataloader = attrib()
     criterion = attrib()
     optimizer = attrib()
-    train_data = load_data()
+    train_data = load_train_data()
     trained_index = 0
 
     @net.default
@@ -147,6 +147,100 @@ class MSSSModelTraining(object):
         #                   self.params.sequence_width,
         #                   self.params.sequence_min_len, self.params.sequence_max_len)
         return dataloader(self.params.num_batches, self.params.batch_size, self.train_data, self.trained_index,
+                          self.params.seq_length, self.params.sequence_width)
+
+    @criterion.default
+    def default_criterion(self):
+        return nn.MSELoss(reduction='mean')
+
+    @optimizer.default
+    def default_optimizer(self):
+        # return optim.RMSprop(self.net.parameters(),
+        #                      momentum=self.params.rmsprop_momentum,
+        #                      alpha=self.params.rmsprop_alpha,
+        #                      lr=self.params.rmsprop_lr)
+        return optim.Adam(self.net.parameters())
+
+def load_test2_data():
+    with open("data/test_var.txt", "rb") as f:
+        train_data = pk.load(f)
+    return train_data
+
+@attrs
+class MSSSModelTesting2(object):
+    params = attrib(default=Factory(MSSSParams))
+    net = attrib()
+    dataloader = attrib()
+    criterion = attrib()
+    optimizer = attrib()
+    test2_data = load_test2_data()
+    trained_index = 0
+
+    @net.default
+    def default_net(self):
+        # We have 1 additional input for the delimiter which is passed on a
+        # separate "control" channel
+        net = EncapsulatedNTM(self.params.sequence_width, self.params.sequence_width,
+                              self.params.controller_size, self.params.controller_layers,
+                              self.params.num_heads,
+                              self.params.memory_n, self.params.memory_m)
+        return net
+
+    @dataloader.default
+    def default_dataloader(self):
+        # return dataloader(self.params.num_batches, self.params.batch_size,
+        #                   self.params.sequence_width,
+        #                   self.params.sequence_min_len, self.params.sequence_max_len)
+        conf = Config()
+        self.params.num_batches = conf.get_test_data_size()
+        return dataloader(self.params.num_batches, self.params.batch_size, self.test2_data, self.trained_index,
+                          self.params.seq_length, self.params.sequence_width)
+
+    @criterion.default
+    def default_criterion(self):
+        return nn.MSELoss(reduction='mean')
+
+    @optimizer.default
+    def default_optimizer(self):
+        # return optim.RMSprop(self.net.parameters(),
+        #                      momentum=self.params.rmsprop_momentum,
+        #                      alpha=self.params.rmsprop_alpha,
+        #                      lr=self.params.rmsprop_lr)
+        return optim.Adam(self.net.parameters())
+
+def load_test_data():
+    with open("data/test.txt", "rb") as f:
+        train_data = pk.load(f)
+    return train_data
+
+@attrs
+class MSSSModelTesting(object):
+    params = attrib(default=Factory(MSSSParams))
+    net = attrib()
+    dataloader = attrib()
+    criterion = attrib()
+    optimizer = attrib()
+    test_data = load_test_data()
+    trained_index = 0
+
+    @net.default
+    def default_net(self):
+        # We have 1 additional input for the delimiter which is passed on a
+        # separate "control" channel
+        net = EncapsulatedNTM(self.params.sequence_width, self.params.sequence_width,
+                              self.params.controller_size, self.params.controller_layers,
+                              self.params.num_heads,
+                              self.params.memory_n, self.params.memory_m)
+        return net
+
+    @dataloader.default
+    def default_dataloader(self):
+        # return dataloader(self.params.num_batches, self.params.batch_size,
+        #                   self.params.sequence_width,
+        #                   self.params.sequence_min_len, self.params.sequence_max_len)
+        conf = Config()
+        self.params.num_batches = conf.get_test_data_size()
+        return dataloader(self.params.num_batches, self.params.batch_size, self.test_data, self.trained_index,
                           self.params.seq_length, self.params.sequence_width)
 
     @criterion.default

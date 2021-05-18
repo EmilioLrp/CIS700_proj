@@ -87,4 +87,4 @@ if __name__ == '__main__':
     mss_generator(conf.get_test_data_size(), test_file_var, conf.var_input_size)
     # check(train_file)
     # check(test_file)
-    check(test_file_var)
+    # check(test_file_var)
