@@ -71,7 +71,7 @@ def encode(inarr):
     conf = Config()
     result = []
     for element in inarr:
-        result.append(encoder(element, conf.threashold, conf.encode_length))
+        result.append(encoder(element, conf.get_threshold(), conf.get_encoding_length()))
     return torch.stack(result, dim=0)
 
 @attrs
