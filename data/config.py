@@ -9,7 +9,7 @@ class Config():
 
     def output_range(self):
         # @TODO: problem specified, may need change
-        return self._low_bound, self._input_size * self._up_bound
+        return self._eos, self._input_size * self._up_bound
 
     def get_up_bound(self):
         return self._up_bound
