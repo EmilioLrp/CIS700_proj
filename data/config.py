@@ -18,7 +18,8 @@ class Config():
 
         # nn configs:
         self.epoch = 1
-        self.lr = 0.05
+        self.h_lr = 0.05
+        self.c_lr = 0.05
         self.layer_size = 1
 
     def output_range(self):

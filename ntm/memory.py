@@ -3,7 +3,8 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 import numpy as np
-
+from data.encoder import encoder as enc
+from data.config import Config
 
 def _convolve(w, s):
     """Circular convolution implementation."""
@@ -31,18 +32,22 @@ class NTMMemory(nn.Module):
         # The memory bias allows the heads to learn how to initially address
         # memory locations by content
         self.register_buffer('mem_bias', torch.Tensor(N, M))
-
+        self.memory = None
+        self.init_mem = None
         # Initialize memory bias
         stdev = 1 / (np.sqrt(N + M))
         nn.init.uniform_(self.mem_bias, -stdev, stdev)
 
+        conf = Config()
+        lower_bound, upper_bound = conf.output_range()
+        threshold = conf.get_threshold()
+        length = conf.get_encoding_length()
+        mem = []
+        for num in range(lower_bound, upper_bound+1):
+            mem.append(enc(num, threshold, length))
+        self.memory = torch.stack(mem, dim=0).float()
+        self.init_mem = torch.stack(mem, dim=0).float()
 
-
-    # modification
-    def set_memory(self, memory):
-        """init memory"""
-        self.memory = memory
-        self.init_mem = memory
 
     def reset(self, batch_size):
         """Initialize memory from bias, for start-of-sequence."""
