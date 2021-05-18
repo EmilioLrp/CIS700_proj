@@ -1,10 +1,14 @@
 import pickle as pk
 import random
 
-# range of random integer
-up_bound = 10
-low_bound = -10
-eos = -11
+from data.config import Config
+
+conf = Config()
+
+low_bound = conf.low_bound
+up_bound = conf.up_bound
+eos = conf.eos
+
 
 # DP solution
 def mss(arr):
@@ -71,8 +75,7 @@ def check(file):
     length = len(x)
     for i in range(length):
         check_sum(x[i], y[i], i)
-        # print("{}, {}".format(len(x[i]), len(y[i])))
-
+        # print("{}, {}".format(x[i], y[i]))
 
 
 if __name__ == '__main__':
@@ -82,6 +85,6 @@ if __name__ == '__main__':
     mss_generator(10000, train_file, 5)
     mss_generator(1000, test_file, 5)
     mss_generator(1000, test_file_var, 10)
-    # check(train_file)
+    check(train_file)
     # check(test_file)
     # check(test_file_var)
