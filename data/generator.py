@@ -82,9 +82,9 @@ if __name__ == '__main__':
     train_file = "train.txt"
     test_file = "test.txt"
     test_file_var = "test_var.txt"
-    mss_generator(10000, train_file, 5)
-    mss_generator(1000, test_file, 5)
-    mss_generator(1000, test_file_var, 10)
+    mss_generator(conf.get_train_data_size(), train_file, conf.get_input_size())
+    mss_generator(conf.get_test_data_size(), test_file, conf.get_input_size())
+    mss_generator(conf.get_test_data_size(), test_file_var, conf.get_input_size())
     check(train_file)
     # check(test_file)
     # check(test_file_var)
