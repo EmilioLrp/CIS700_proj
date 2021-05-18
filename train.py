@@ -19,6 +19,7 @@ import copy
 import pickle as pk
 
 from data.encoder import encoder as enc
+from data.config import Config
 
 LOGGER = logging.getLogger(__name__)
 
@@ -292,9 +293,8 @@ def main():
 
     # Initialize the model
     model = init_model(args)
-
-    lower_bound = -11
-    upper_bound = 100
+    conf = Config()
+    lower_bound, upper_bound = conf.output_range()
     memory = init_memory(lower_bound, upper_bound)
     LOGGER.info("Total number of parameters: %d", model.net.calculate_num_params())
     train_model(model, args, memory)
