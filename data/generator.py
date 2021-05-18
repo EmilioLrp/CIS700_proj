@@ -84,7 +84,7 @@ if __name__ == '__main__':
     test_file_var = "test_var.txt"
     mss_generator(conf.get_train_data_size(), train_file, conf.get_input_size())
     mss_generator(conf.get_test_data_size(), test_file, conf.get_input_size())
-    mss_generator(conf.get_test_data_size(), test_file_var, conf.get_input_size())
-    check(train_file)
+    mss_generator(conf.get_test_data_size(), test_file_var, conf.var_input_size)
+    # check(train_file)
     # check(test_file)
-    # check(test_file_var)
+    check(test_file_var)

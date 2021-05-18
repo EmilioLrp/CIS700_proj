@@ -1,15 +1,28 @@
 class Config():
     def __init__(self):
+        # Input data element range
         self._up_bound = 10
         self._low_bound = -10
+
+        # end of sentence: assign an unreachable number
         self._eos = -11
+
         self._input_size = 5
         self._encode_length = 7
         self._threshold = 11
         self._train_data_size = 10000
         self._test_data_size = 1000
 
+        # for variate size testing data
+        self.var_input_size = 10
+
+        # nn configs:
+        self.epoch = 1
+        self.lr = 0.05
+        self.layer_size = 1
+
     def output_range(self):
+        # memory range
         # @TODO: problem specified, may need change
         return self._eos, self._input_size * self._up_bound
 
