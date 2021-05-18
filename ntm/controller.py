@@ -3,12 +3,15 @@ import torch
 from torch import nn
 from torch.nn import Parameter
 import numpy as np
+from data.config import Config
 
 
 class LSTMController(nn.Module):
     """An NTM controller based on LSTM."""
     def __init__(self, num_inputs, num_outputs, num_layers):
         super(LSTMController, self).__init__()
+
+        self._config = Config()
 
         self.num_inputs = num_inputs
         self.num_outputs = num_outputs
@@ -19,8 +22,8 @@ class LSTMController(nn.Module):
                             num_layers=num_layers)
 
         # The hidden state is a learned parameter
-        self.lstm_h_bias = Parameter(torch.randn(self.num_layers, 1, self.num_outputs) * 0.05)
-        self.lstm_c_bias = Parameter(torch.randn(self.num_layers, 1, self.num_outputs) * 0.05)
+        self.lstm_h_bias = Parameter(torch.randn(self.num_layers, 1, self.num_outputs) * self._config.h_lr)
+        self.lstm_c_bias = Parameter(torch.randn(self.num_layers, 1, self.num_outputs) * self._config.c_lr)
 
         self.reset_parameters()
 

@@ -87,7 +87,7 @@ class MSSSParams(object):
 
     name = attrib(default="msss-task")
     controller_size = attrib(default=100, convert=int)
-    controller_layers = attrib(default=1, convert=int)
+    controller_layers = attrib(default=conf.layer_size, convert=int)
     num_heads = attrib(default=1, convert=int)
     sequence_width = attrib(default=elem_size, convert=int)
     # sequence_min_len = attrib(default=1, convert=int)
@@ -135,7 +135,7 @@ class MSSSModelTraining(object):
     def default_net(self):
         # We have 1 additional input for the delimiter which is passed on a
         # separate "control" channel
-        net = EncapsulatedNTM(self.params.sequence_width + 1, self.params.sequence_width,
+        net = EncapsulatedNTM(self.params.sequence_width, self.params.sequence_width,
                               self.params.controller_size, self.params.controller_layers,
                               self.params.num_heads,
                               self.params.memory_n, self.params.memory_m)

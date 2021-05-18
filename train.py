@@ -165,21 +165,9 @@ def evaluate(net, criterion, X, Y):
     return result
 
 # modification
-def init_memory(lower_bound, upper_bound,threshold, length):
-    # @TODO modification according to encoder
-    # max_num = upper_bound - lower_bound + 1
-    # memory = enc(lower_bound, -lower_bound, threshold).unsqueeze(0) # wait for config file
-    #
-    # for i in range(lower_bound+1, max_num+1):
-    #     temp = enc(i,-lower_bound, threshold ).unsqueeze(0) # wait for config file
-    #     memory = torch.cat((memory,temp),0)
-    # return memory
-    mem = []
-    for num in range(lower_bound, upper_bound):
-        mem.append(enc(num, threshold, length))
-    return torch.stack(mem, dim=0)
 
-def train_model(model, args, memory):
+
+def train_model(model, args):
     num_batches = model.params.num_batches
     batch_size = model.params.batch_size
 
@@ -190,36 +178,36 @@ def train_model(model, args, memory):
     costs = []
     seq_lengths = []
     start_ms = get_ms()
+    conf = Config()
+    for epoch in range(conf.epoch):
+        for batch_num, x, y in model.dataloader:
+            # @TODO: create a deep copy of memory, mem_batch
+            # @TODO: before train, set model's memory to mem_batch
 
-    for batch_num, x, y in model.dataloader:
-        # @TODO: create a deep copy of memory, mem_batch
-        # @TODO: before train, set model's memory to mem_batch
 
-        mem_batch = copy.deepcopy(memory)
-        model.memory.set_memory(mem_batch)
-        loss, cost = train_batch(model.net, model.criterion, model.optimizer, x, y)
-        losses += [loss]
-        costs += [cost]
-        seq_lengths += [y.size(0)]
+            loss, cost = train_batch(model.net, model.criterion, model.optimizer, x, y)
+            losses += [loss]
+            costs += [cost]
+            seq_lengths += [y.size(0)]
 
-        # Update the progress bar
-        progress_bar(batch_num, args.report_interval, loss)
+            # Update the progress bar
+            progress_bar(batch_num, args.report_interval, loss)
 
-        # Report
-        if batch_num % args.report_interval == 0:
-            mean_loss = np.array(losses[-args.report_interval:]).mean()
-            mean_cost = np.array(costs[-args.report_interval:]).mean()
-            mean_time = int(((get_ms() - start_ms) / args.report_interval) / batch_size)
-            progress_clean()
-            LOGGER.info("Batch %d Loss: %.6f Cost: %.2f Time: %d ms/sequence",
-                        batch_num, mean_loss, mean_cost, mean_time)
-            start_ms = get_ms()
+            # Report
+            if batch_num % args.report_interval == 0:
+                mean_loss = np.array(losses[-args.report_interval:]).mean()
+                mean_cost = np.array(costs[-args.report_interval:]).mean()
+                mean_time = int(((get_ms() - start_ms) / args.report_interval) / batch_size)
+                progress_clean()
+                LOGGER.info("Batch %d Loss: %.6f Cost: %.2f Time: %d ms/sequence",
+                            batch_num, mean_loss, mean_cost, mean_time)
+                start_ms = get_ms()
 
-        # Checkpoint
-        if (args.checkpoint_interval != 0) and (batch_num % args.checkpoint_interval == 0):
-            save_checkpoint(model.net, model.params.name, args,
-                            batch_num, losses, costs, seq_lengths)
-
+            # Checkpoint
+            if (args.checkpoint_interval != 0) and (batch_num % args.checkpoint_interval == 0):
+                save_checkpoint(model.net, model.params.name, args,
+                                batch_num, losses, costs, seq_lengths)
+    torch.save(model.net.state_dict(), './model/testmodel')
     LOGGER.info("Done training.")
 
 
@@ -298,12 +286,10 @@ def main():
 
     # Initialize the model
     model = init_model(args)
-    conf = Config()
-    lower_bound, upper_bound = conf.output_range()
-    threshold = conf.get_threshold()
-    memory = init_memory(lower_bound, upper_bound, threshold, conf.get_encoding_length())
+
+
     LOGGER.info("Total number of parameters: %d", model.net.calculate_num_params())
-    train_model(model, args, memory)
+    train_model(model, args)
 
 
 if __name__ == '__main__':
