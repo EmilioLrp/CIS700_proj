@@ -74,11 +74,14 @@ def encode(inarr):
 @attrs
 class MSSSParams(object):
     # specified = attrib(default=Factory(specified_param))
-    M = 7
-    N = 111
-    seq_length = 6  # number of elements in the input sequence
-    elem_size = 7  # length of the vector of each element in the input sequence
-    total_data_size = 10000
+    # @TODO: change them when testing
+    conf = Config()
+    M = conf.get_encoding_length()
+    m_min, m_max = conf.output_range()
+    N = m_max - m_min
+    seq_length = conf.get_input_size() + 1  # number of elements in the input sequence
+    elem_size = conf.get_encoding_length()  # length of the vector of each element in the input sequence
+    total_data_size = conf.get_train_data_size()
     batch_len = 1
     batch_num = total_data_size / batch_len
 

@@ -6,6 +6,8 @@ class Config():
         self._input_size = 5
         self._encode_length = 7
         self._threshold = 11
+        self._train_data_size = 10000
+        self._test_data_size = 1000
 
     def output_range(self):
         # @TODO: problem specified, may need change
@@ -28,3 +30,9 @@ class Config():
 
     def get_threshold(self):
         return self._threshold
+
+    def get_train_data_size(self):
+        return self._train_data_size
+
+    def get_test_data_size(self):
+        return self._test_data_size
