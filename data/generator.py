@@ -5,9 +5,9 @@ from data.config import Config
 
 conf = Config()
 
-low_bound = conf.low_bound
-up_bound = conf.up_bound
-eos = conf.eos
+low_bound = conf.get_low_bound()
+up_bound = conf.get_up_bound()
+eos = conf.get_eos()
 
 
 # DP solution
@@ -74,8 +74,8 @@ def check(file):
         (x, y) = pk.load(f)
     length = len(x)
     for i in range(length):
-        check_sum(x[i], y[i], i)
-        # print("{}, {}".format(x[i], y[i]))
+        # check_sum(x[i], y[i], i)
+        print("{}, {}".format(x[i], y[i]))
 
 
 if __name__ == '__main__':
