@@ -165,14 +165,19 @@ def evaluate(net, criterion, X, Y):
     return result
 
 # modification
-def init_memory(lower_bound, upper_bound):
+def init_memory(lower_bound, upper_bound,threshold, length):
     # @TODO modification according to encoder
-    max_num = upper_bound - lower_bound + 1
-    memory = encoder(lower_bound,lower_bound, upper_bound)
-    for i in range(lower_bound+1, max_num+1):
-        temp = encoder(i,lower_bound, upper_bound)
-        memory = torch.cat((memory,temp),0)
-    return memory
+    # max_num = upper_bound - lower_bound + 1
+    # memory = enc(lower_bound, -lower_bound, threshold).unsqueeze(0) # wait for config file
+    #
+    # for i in range(lower_bound+1, max_num+1):
+    #     temp = enc(i,-lower_bound, threshold ).unsqueeze(0) # wait for config file
+    #     memory = torch.cat((memory,temp),0)
+    # return memory
+    mem = []
+    for num in range(lower_bound, upper_bound):
+        mem.append(enc(num, threshold, length))
+    return torch.stack(mem, dim=0)
 
 def train_model(model, args, memory):
     num_batches = model.params.num_batches
@@ -295,7 +300,8 @@ def main():
     model = init_model(args)
     conf = Config()
     lower_bound, upper_bound = conf.output_range()
-    memory = init_memory(lower_bound, upper_bound)
+    threshold = conf.get_threshold()
+    memory = init_memory(lower_bound, upper_bound, threshold, conf.get_encoding_length())
     LOGGER.info("Total number of parameters: %d", model.net.calculate_num_params())
     train_model(model, args, memory)
 
