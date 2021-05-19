@@ -253,7 +253,7 @@ def test(model, args):
 
         loss = model.criterion(y_out, y)
         losses += [loss]
-    with open('test_loss2ª.txt', "wb") as f:
+    with open('test_loss2.txt', "wb") as f:
         pk.dump(losses, f)
 
 def main():
