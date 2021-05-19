@@ -182,8 +182,13 @@ def train_model(model, args):
 
 
     conf = Config()
+
+    data = []
+    for batch_num, x, y in model.dataloader:
+        data.append((batch_num, x, y))
     for epoch in range(conf.epoch):
-        for batch_num, x, y in model.dataloader:
+        print("epoch {}".format(epoch))
+        for batch_num, x, y in data:
             # @TODO: create a deep copy of memory, mem_batch
             # @TODO: before train, set model's memory to mem_batch
 
