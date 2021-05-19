@@ -17,7 +17,7 @@ class Config():
         self.var_input_size = 10
 
         # nn configs:
-        self.epoch = 100
+        self.epoch = 1
         self.h_lr = 0.05
         self.c_lr = 0.05
         self.layer_size = 1
