@@ -25,12 +25,12 @@ LOGGER = logging.getLogger(__name__)
 
 # from tasks.copytask import CopyTaskModelTraining, CopyTaskParams
 # from tasks.repeatcopytask import RepeatCopyTaskModelTraining, RepeatCopyTaskParams
-from tasks.msss import MSSSModelTesting2, MSSSParams
+from tasks.msss import MSSSModelTesting2, MSSSParamsVar
 
 TASKS = {
     # 'copy': (CopyTaskModelTraining, CopyTaskParams),
     # 'repeat-copy': (RepeatCopyTaskModelTraining, RepeatCopyTaskParams)
-    'msss': (MSSSModelTesting2, MSSSParams)
+    'msss': (MSSSModelTesting2, MSSSParamsVar)
 }
 
 # Default values for program arguments
@@ -239,19 +239,43 @@ def test(model, args):
                 num_batches, batch_size)
 
     losses = []
-    costs = []
-    seq_lengths = []
-    start_ms = get_ms()
+    # costs = []
+    # seq_lengths = []
+    # start_ms = get_ms()
+
+    data = []
     for batch_num, x, y in model.dataloader:
+        data.append((batch_num, x, y))
+
+    for batch_num, x, y in data:
+        print("batch num: {}".format(batch_num))
+        # inp_seq_len = x.size(0)
+        # outp_seq_len, batch_size, _ = y.size()
+        # model.net.init_sequence(batch_size)
+        #
+        # y_out = torch.zeros(y.size())
+        # for i in range(outp_seq_len):
+        #     y_out[i], _ = model.net(x[i])
+        #
+        # loss = model.criterion(y_out, y)
+        net = model.net
         inp_seq_len = x.size(0)
         outp_seq_len, batch_size, _ = y.size()
-        model.net.init_sequence(batch_size)
 
+        # New sequence
+        net.init_sequence(batch_size)
+
+        # Feed the sequence + delimiter
+        for i in range(inp_seq_len):
+            net(x[i])
+
+        # Read the output (no input given)
         y_out = torch.zeros(y.size())
         for i in range(outp_seq_len):
-            y_out[i], _ = model.net(x[i])
+            y_out[i], _ = net()
 
         loss = model.criterion(y_out, y)
+
         losses += [loss]
     with open('test_loss2.txt', "wb") as f:
         pk.dump(losses, f)
