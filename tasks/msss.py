@@ -50,19 +50,25 @@ def dataloader(num_batches,
     (x, y) = data
     length = len(x)
     for batch_num in range(num_batches):
+        inp = torch.zeros(seq_length, batch_size, seq_width)
+        oup = torch.zeros(seq_length, batch_size, seq_width)
         for i in range(batch_size):
             if pointer >= length:
                 break
             else:
-                inp = encode(x[pointer]).unsqueeze(dim=1)
-                oup = encode(y[pointer]).unsqueeze(dim=1)
-                yield batch_num + 1, inp.float(), oup.float()
+                inp[:, i, :] = encode(x[pointer])
+                oup[:, i, :] = encode(y[pointer])
+                # inp = encode(x[pointer]).unsqueeze(dim=1)
+                # oup = encode(y[pointer]).unsqueeze(dim=1)
+                # yield batch_num + 1, inp.float(), oup.float()
                 pointer += 1
+        yield batch_num + 1, inp.float(), oup.float()
         # if pointer >= length:
         #     break
         # else:
         #     pointer += 1
         #     yield batch_num + 1, x[pointer - 1], y[pointer - 1]
+
 
 def encode(inarr):
     conf = Config()
@@ -70,6 +76,7 @@ def encode(inarr):
     for element in inarr:
         result.append(encoder(element, conf.get_threshold(), conf.get_encoding_length()))
     return torch.stack(result, dim=0)
+
 
 @attrs
 class MSSSParams(object):
@@ -80,9 +87,11 @@ class MSSSParams(object):
     m_min, m_max = conf.output_range()
     N = m_max - m_min + 1
     seq_length = conf.get_input_size() + 1  # number of elements in the input sequence
+    var_seq_length = conf.var_input_size + 1
     elem_size = conf.get_encoding_length()  # length of the vector of each element in the input sequence
     total_data_size = conf.get_train_data_size()
-    batch_len = 1
+    # total_data_size = conf.get_test_data_size()
+    batch_len = conf.batch_size
     batch_num = total_data_size / batch_len
 
     name = attrib(default="msss-task")
@@ -101,6 +110,66 @@ class MSSSParams(object):
     rmsprop_alpha = attrib(default=0.95, convert=float)
 
 
+@attrs
+class MSSSParamsTest(object):
+    # specified = attrib(default=Factory(specified_param))
+    # @TODO: change them when testing
+    conf = Config()
+    M = conf.get_encoding_length()
+    m_min, m_max = conf.output_range()
+    N = m_max - m_min + 1
+    seq_length = conf.get_input_size() + 1  # number of elements in the input sequence
+    var_seq_length = conf.var_input_size + 1
+    elem_size = conf.get_encoding_length()  # length of the vector of each element in the input sequence
+    total_data_size = conf.get_test_data_size()
+    batch_len = conf.batch_size
+    batch_num = total_data_size / batch_len
+
+    name = attrib(default="msss-task")
+    controller_size = attrib(default=100, convert=int)
+    controller_layers = attrib(default=conf.layer_size, convert=int)
+    num_heads = attrib(default=1, convert=int)
+    sequence_width = attrib(default=elem_size, convert=int)
+    # sequence_min_len = attrib(default=1, convert=int)
+    # sequence_max_len = attrib(default=20, convert=int)
+    memory_n = attrib(default=N, convert=int)
+    memory_m = attrib(default=M, convert=int)
+    num_batches = attrib(default=batch_num, convert=int)
+    batch_size = attrib(default=batch_len, convert=int)
+    rmsprop_lr = attrib(default=1e-4, convert=float)
+    rmsprop_momentum = attrib(default=0.9, convert=float)
+    rmsprop_alpha = attrib(default=0.95, convert=float)
+
+
+@attrs
+class MSSSParamsVar(object):
+    # specified = attrib(default=Factory(specified_param))
+    # @TODO: change them when testing
+    conf = Config()
+    M = conf.get_encoding_length()
+    m_min, m_max = conf.output_range()
+    N = m_max - m_min + 1
+    seq_length = conf.get_input_size() + 1  # number of elements in the input sequence
+    var_seq_length = conf.var_input_size + 1
+    elem_size = conf.get_encoding_length()  # length of the vector of each element in the input sequence
+    total_data_size = conf.get_test_data_size()
+    batch_len = conf.batch_size
+    batch_num = total_data_size / batch_len
+
+    name = attrib(default="msss-task")
+    controller_size = attrib(default=100, convert=int)
+    controller_layers = attrib(default=conf.layer_size, convert=int)
+    num_heads = attrib(default=1, convert=int)
+    sequence_width = attrib(default=elem_size, convert=int)
+    # sequence_min_len = attrib(default=1, convert=int)
+    # sequence_max_len = attrib(default=20, convert=int)
+    memory_n = attrib(default=N, convert=int)
+    memory_m = attrib(default=M, convert=int)
+    num_batches = attrib(default=batch_num, convert=int)
+    batch_size = attrib(default=batch_len, convert=int)
+    rmsprop_lr = attrib(default=1e-4, convert=float)
+    rmsprop_momentum = attrib(default=0.9, convert=float)
+    rmsprop_alpha = attrib(default=0.95, convert=float)
 #
 # To create a network simply instantiate the `:class:CopyTaskModelTraining`,
 # all the components will be wired with the default values.
@@ -120,6 +189,7 @@ def load_train_data():
     with open("data/train.txt", "rb") as f:
         train_data = pk.load(f)
     return train_data
+
 
 @attrs
 class MSSSModelTraining(object):
@@ -161,14 +231,16 @@ class MSSSModelTraining(object):
         #                      lr=self.params.rmsprop_lr)
         return optim.Adam(self.net.parameters())
 
+
 def load_test2_data():
     with open("data/test_var.txt", "rb") as f:
         train_data = pk.load(f)
     return train_data
 
+
 @attrs
 class MSSSModelTesting2(object):
-    params = attrib(default=Factory(MSSSParams))
+    params = attrib(default=Factory(MSSSParamsVar))
     net = attrib()
     dataloader = attrib()
     criterion = attrib()
@@ -191,10 +263,8 @@ class MSSSModelTesting2(object):
         # return dataloader(self.params.num_batches, self.params.batch_size,
         #                   self.params.sequence_width,
         #                   self.params.sequence_min_len, self.params.sequence_max_len)
-        conf = Config()
-        self.params.num_batches = conf.get_test_data_size()
         return dataloader(self.params.num_batches, self.params.batch_size, self.test2_data, self.trained_index,
-                          self.params.seq_length, self.params.sequence_width)
+                          self.params.var_seq_length, self.params.sequence_width)
 
     @criterion.default
     def default_criterion(self):
@@ -208,10 +278,12 @@ class MSSSModelTesting2(object):
         #                      lr=self.params.rmsprop_lr)
         return optim.Adam(self.net.parameters())
 
+
 def load_test_data():
     with open("data/test.txt", "rb") as f:
         train_data = pk.load(f)
     return train_data
+
 
 @attrs
 class MSSSModelTesting(object):
@@ -238,8 +310,6 @@ class MSSSModelTesting(object):
         # return dataloader(self.params.num_batches, self.params.batch_size,
         #                   self.params.sequence_width,
         #                   self.params.sequence_min_len, self.params.sequence_max_len)
-        conf = Config()
-        self.params.num_batches = conf.get_test_data_size()
         return dataloader(self.params.num_batches, self.params.batch_size, self.test_data, self.trained_index,
                           self.params.seq_length, self.params.sequence_width)
 

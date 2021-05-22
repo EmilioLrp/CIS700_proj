@@ -21,6 +21,7 @@ class Config():
         self.h_lr = 0.05
         self.c_lr = 0.05
         self.layer_size = 1
+        self.batch_size = 10
 
     def output_range(self):
         # memory range
