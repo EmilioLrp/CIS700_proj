@@ -66,6 +66,14 @@ def mss_generator(data_size, file, data_length):
     with open(file, "wb") as f:
         pk.dump((input_data, output_data), f)
 
+def run():
+    train_file = "data/train.txt"
+    test_file = "data/test.txt"
+    test_file_var = "data/test_var.txt"
+    mss_generator(conf.get_train_data_size(), train_file, conf.get_input_size())
+    mss_generator(conf.get_test_data_size(), test_file, conf.get_input_size())
+    mss_generator(conf.get_test_data_size(), test_file_var, conf.var_input_size)
+
 if __name__ == '__main__':
     train_file = "train.txt"
     test_file = "test.txt"
