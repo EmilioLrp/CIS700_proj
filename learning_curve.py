@@ -32,7 +32,7 @@ with open('test_loss2.txt', 'rb') as f:
 fig = plt.figure()
 
 ax1 = fig.add_subplot(111)
-ax1.plot(np.arange(1, len(train_loss)+1, 1), train_loss, label = 'train', color = 'R')
+ax1.plot(np.arange(1, len(train_loss)+1, 1), train_loss, label = 'train', color = 'red')
 
 
 ax1.set_xlabel('iterations')
@@ -40,8 +40,8 @@ ax1.set_ylabel('loss')
 
 
 ax2 = plt.twiny()
-ax2.plot(np.arange(1, len(test_loss)+1, 1), test_loss, label = 'test', color = 'B')
-ax2.plot(np.arange(1, len(test_loss2)+1, 1), test_loss2, label = 'test2', color = 'G')
+ax2.plot(np.arange(1, len(test_loss)+1, 1), test_loss, label = 'test', color = 'blue')
+ax2.plot(np.arange(1, len(test_loss2)+1, 1), test_loss2, label = 'test2', color = 'green')
 ax2.set_xlabel('test')
 
 fig.legend()
