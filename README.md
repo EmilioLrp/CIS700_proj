@@ -91,4 +91,4 @@ Some configurations can be accessed and modified via `CIS700_proj/data/config.py
 Other configs of the model needs to be accessed within the code.
 
 ### Sample model
-There is a sample trained model located within the folder `CIS700_proj/model/` that is trained under the current configuration. If you would like to train another model, please make sure that the training data is available and remove the model first. 
+There is a sample trained model located within the folder `CIS700_proj/model/` that is trained under the current configuration. Corresponding training and testing datasets are located in `CIS700_proj/data/`. If you would like to train another model, please make sure that the training data is available and remove the model first. If you wish to regenerate the training and testing data, please make sure that the original training and testing datasets are removed. 
