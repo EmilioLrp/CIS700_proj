@@ -2,7 +2,7 @@
 This is the repository of the sorce code for CIS 700 Neural Program Learning's semester project. The purpose of this project is to use the architecture of NTM to solve 4 different tasks. Each team member is correpond to one task alone. The task may came from internet and it may varies from its original version. 
 This project is modified from the original project at [here](https://github.com/loudinthecloud/pytorch-ntm).
 
-## Instructeor 
+## Instructor
 * Dr. Garrett Katz(gkatz01@syr.edu)
 
 ## Contributors and corresponding tasks
@@ -16,14 +16,14 @@ This project is modified from the original project at [here](https://github.com/
 	* [Palindrome numbers](https://leetcode.com/problems/palindrome-number/)
 	* Branch name: czuo02
 * Yuchao XU (yxu219@syr.edu)
-	* Odd and even numbers
+	* Valid Parity
 	* Branch name: yxu219
 
 ## System requirement
 In order to run this project, please make sure that the hosting machine having a python3 installed. Being able to build a virtual environment or any other isolated environment is preferred since some of the packages that this project used may not be the most up to date version.
 
 ## Dependencies installation
-Again it is highly recommended to install an isolated invironment. This instruction assuems the installation happends in virtual environment.
+Again it is highly recommended to install an isolated environment. This instruction assume the installation happens in virtual environment.
 
 First, activate virtual environment. Then go to the root folder of the project, where the `requirements.txt` is located. Execute the following command:
 
@@ -44,9 +44,9 @@ First, select the corresponding branch that aims to solve a particular problem. 
 The following command are assume that the virtual environment is activated.
 
 ### Data generation
-To generate training and testing data, please access file `CIS700_proj/data/generator.py`. Execute the following command:
+To generate training and testing data, please execute the following command at the root folder of the project:
 ```
-python generator.py
+python data_generator.py
 ```
 If successfully executed, 3 files named `train.txt, test.txt, test_var.txt` corresponding to trainig data, testing data with the same input size with the trainig data and the testing data with different input size with the trainig data should be presented in the same directory.
 
@@ -84,9 +84,9 @@ Some configurations can be accessed and modified via `CIS700_proj/data/config.py
 * EOS's representation, make sure that this representation cannot be accessed by all possible elements in input and output
 * Size of input
 * Encoding length of each element both input and output (an unsigned integer's binary representation)
-* Threashold for encoding. (Shift the encoding data to non-negateive)
+* Threshold for encoding. (Shift the encoding data to non-negative)
 * Training, testing and variate testing data size
-* A portion of nerual network configuration
+* A portion of neural network configuration
 
 Other configs of the model needs to be accessed within the code.
 
