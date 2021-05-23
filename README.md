@@ -34,7 +34,7 @@ pip install -r requirements.txt
 There may be issues regarding different package name and versions accross different OS, in that case, please make sure that the following packages are properlly installed:
 
 * attrs==19.1.0
-* matplotlib
+* matplotlib==3.3.4
 * numpy==1.19.5
 * torch==1.8.1
 
