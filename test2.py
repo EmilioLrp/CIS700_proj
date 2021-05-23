@@ -267,7 +267,7 @@ def main():
 
     # Initialize the model
     model = init_model(args)
-    model.net.load_state_dict(torch.load('./model/model2'))
+    model.net.load_state_dict(torch.load('./model/model'))
     test(model, args)
 
 

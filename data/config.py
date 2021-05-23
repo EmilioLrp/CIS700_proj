@@ -31,7 +31,7 @@ class Config():
         self.layer_size = 2
        
         '''
-        # model 2 nn configs:
+        # model 3 nn configs:
         self.epoch = 10
         self.h_lr = 0.03
         self.c_lr = 0.07
