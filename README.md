@@ -89,3 +89,6 @@ Some configurations can be accessed and modified via `CIS700_proj/data/config.py
 * A portion of nerual network configuration
 
 Other configs of the model needs to be accessed within the code.
+
+### Sample model
+There is a sample trained model located within the folder `CIS700_proj/model/` that is trained under the current configuration. If you would like to train another model, please make sure that the training data is available and remove the model first. 
