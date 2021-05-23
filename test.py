@@ -25,12 +25,12 @@ LOGGER = logging.getLogger(__name__)
 
 # from tasks.copytask import CopyTaskModelTraining, CopyTaskParams
 # from tasks.repeatcopytask import RepeatCopyTaskModelTraining, RepeatCopyTaskParams
-from tasks.msss import MSSSModelTesting, MSSSParamsTest
+from tasks.msss import MSSSModelTesting, MSSSParams
 
 TASKS = {
     # 'copy': (CopyTaskModelTraining, CopyTaskParams),
     # 'repeat-copy': (RepeatCopyTaskModelTraining, RepeatCopyTaskParams)
-    'msss': (MSSSModelTesting, MSSSParamsTest)
+    'msss': (MSSSModelTesting, MSSSParams)
 }
 
 # Default values for program arguments
@@ -242,32 +242,19 @@ def test(model, args):
     costs = []
     seq_lengths = []
     start_ms = get_ms()
-    data = []
     for batch_num, x, y in model.dataloader:
-        data.append((batch_num, x, y))
-
-    for batch_num, x, y in data:
-        print("batch num: {}".format(batch_num))
-        net = model.net
         inp_seq_len = x.size(0)
         outp_seq_len, batch_size, _ = y.size()
+        model.net.init_sequence(batch_size)
+        #y_out, _ = model.net(x)
 
-        # New sequence
-        net.init_sequence(batch_size)
-
-        # Feed the sequence + delimiter
-        for i in range(inp_seq_len):
-            net(x[i])
-
-        # Read the output (no input given)
         y_out = torch.zeros(y.size())
         for i in range(outp_seq_len):
-            y_out[i], _ = net()
+            y_out[i], _ = model.net(x[i])
 
         loss = model.criterion(y_out, y)
-
         losses += [loss]
-    with open('test_loss.txt', "wb") as f:
+    with open('test_loss_2.txt', "wb") as f:
         pk.dump(losses, f)
 
 def main():
@@ -281,7 +268,7 @@ def main():
 
     # Initialize the model
     model = init_model(args)
-    model.net.load_state_dict(torch.load('./model/testmodel'))
+    model.net.load_state_dict(torch.load('./model/model2'))
     test(model, args)
 
 

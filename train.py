@@ -218,9 +218,9 @@ def train_model(model, args):
                                 batch_num, losses, costs, seq_lengths)
             '''
         epoch_losses += [np.array(losses[-model.params.num_batches:]).mean()]
-    with open('train_loss.txt', "wb") as f:
+    with open('train_loss_3.txt', "wb") as f:
         pk.dump((losses, epoch_losses), f)
-    torch.save(model.net.state_dict(), './model/testmodel')
+    torch.save(model.net.state_dict(), './model/model3')
     LOGGER.info("Done training.")
 
 

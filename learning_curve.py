@@ -17,27 +17,22 @@ with open('test_loss.txt','r') as f:
 with open('test_loss2.txt','r') as f:
     test_loss2 = eval(f.read())
 '''
-# base_dir = "../../result/10_batch_size/1_layer/"
-base_dir = "./"
-train_file = base_dir + 'train_loss.txt'
-test_file = base_dir + 'test_loss.txt'
-test_var_file = base_dir + 'test_loss2.txt'
 
-with open(train_file, 'rb') as f:
+with open('train_loss.txt', 'rb') as f:
     loss = pickle.load(f)
     train_loss = loss[0]
     #train_loss = loss[1]
 
-with open(test_file, 'rb') as f:
+with open('test_loss.txt', 'rb') as f:
     test_loss = pickle.load(f)
 
-with open(test_var_file, 'rb') as f:
+with open('test_loss2.txt', 'rb') as f:
     test_loss2 = pickle.load(f)
 
 fig = plt.figure()
 
 ax1 = fig.add_subplot(111)
-ax1.plot(np.arange(1, len(train_loss)+1, 1), train_loss, label = 'train', color = 'red')
+ax1.plot(np.arange(1, len(train_loss)+1, 1), train_loss, label = 'train', color = 'R')
 
 
 ax1.set_xlabel('iterations')
@@ -45,8 +40,8 @@ ax1.set_ylabel('loss')
 
 
 ax2 = plt.twiny()
-ax2.plot(np.arange(1, len(test_loss)+1, 1), test_loss, label = 'test', color = 'blue')
-ax2.plot(np.arange(1, len(test_loss2)+1, 1), test_loss2, label = 'test2', color = 'green')
+ax2.plot(np.arange(1, len(test_loss)+1, 1), test_loss, label = 'test', color = 'B')
+ax2.plot(np.arange(1, len(test_loss2)+1, 1), test_loss2, label = 'test2', color = 'G')
 ax2.set_xlabel('test')
 
 fig.legend()
