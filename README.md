@@ -16,7 +16,7 @@ This project is modified from the original project at [here](https://github.com/
 	* [Palindrome numbers](https://leetcode.com/problems/palindrome-number/)
 	* Branch name: czuo02
 * Yuchao XU (yxu219@syr.edu)
-	* Odd and even numbers
+	* Valid Parity
 	* Branch name: yxu219
 
 ## System requirement
