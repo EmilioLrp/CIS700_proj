@@ -49,6 +49,14 @@ def data_generator(problem_size, data_file, data_length):
     with open(data_file, "wb") as f:
         pk.dump((input_data, output_data), f)
 
+def run():
+    train_file = "data/train.txt"
+    test_file = "data/test.txt"
+    test2_file = "data/test2.txt"
+    data_generator(conf.get_train_data_size(), train_file, conf.get_input_size())
+    data_generator(conf.get_test_data_size(), test_file, conf.get_input_size())
+    data_generator(conf.get_test_data_size(), test2_file, conf.var_input_size)
+
 if __name__ == '__main__':
     train_file = "train.txt"
     test_file = "test.txt"
