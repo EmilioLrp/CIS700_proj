@@ -44,9 +44,9 @@ First, select the corresponding branch that aims to solve a particular problem. 
 The following command are assume that the virtual environment is activated.
 
 ### Data generation
-To generate training and testing data, please access file `CIS700_proj/data/generator.py`. Execute the following command:
+To generate training and testing data, please execute the following command at the root folder of the project:
 ```
-python generator.py
+python data_generator.py
 ```
 If successfully executed, 3 files named `train.txt, test.txt, test_var.txt` corresponding to trainig data, testing data with the same input size with the trainig data and the testing data with different input size with the trainig data should be presented in the same directory.
 
