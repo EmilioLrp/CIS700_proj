@@ -77,14 +77,17 @@ def check(file):
         # check_sum(x[i], y[i], i)
         print("{}, {}".format(x[i], y[i]))
 
-
-if __name__ == '__main__':
-    train_file = "train.txt"
-    test_file = "test.txt"
-    test_file_var = "test_var.txt"
+def run():
+    train_file = "data/train.txt"
+    test_file = "data/test.txt"
+    test_file_var = "data/test_var.txt"
     mss_generator(conf.get_train_data_size(), train_file, conf.get_input_size())
     mss_generator(conf.get_test_data_size(), test_file, conf.get_input_size())
     mss_generator(conf.get_test_data_size(), test_file_var, conf.var_input_size)
+
+
+if __name__ == '__main__':
+    run()
     # check(train_file)
     # check(test_file)
     # check(test_file_var)
