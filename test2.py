@@ -25,12 +25,12 @@ LOGGER = logging.getLogger(__name__)
 
 # from tasks.copytask import CopyTaskModelTraining, CopyTaskParams
 # from tasks.repeatcopytask import RepeatCopyTaskModelTraining, RepeatCopyTaskParams
-from tasks.msss import MSSSModelTesting2, MSSSParamsVar
+from tasks.coe import COEModelTesting2, COEParams
 
 TASKS = {
     # 'copy': (CopyTaskModelTraining, CopyTaskParams),
     # 'repeat-copy': (RepeatCopyTaskModelTraining, RepeatCopyTaskParams)
-    'msss': (MSSSModelTesting2, MSSSParamsVar)
+    'coe': (COEModelTesting2, COEParams)
 }
 
 # Default values for program arguments
@@ -171,8 +171,8 @@ def train_model(model, args):
 def init_arguments():
     parser = argparse.ArgumentParser(prog='train.py')
     parser.add_argument('--seed', type=int, default=RANDOM_SEED, help="Seed value for RNGs")
-    parser.add_argument('--task', action='store', choices=list(TASKS.keys()), default='msss',
-                        help="Choose the task to train (default: msss)")
+    parser.add_argument('--task', action='store', choices=list(TASKS.keys()), default='coe',
+                        help="Choose the task to train (default: coe)")
     parser.add_argument('-p', '--param', action='append', default=[],
                         help='Override model params. Example: "-pbatch_size=4 -pnum_heads=2"')
     parser.add_argument('--checkpoint-interval', type=int, default=CHECKPOINT_INTERVAL,
@@ -239,43 +239,19 @@ def test(model, args):
                 num_batches, batch_size)
 
     losses = []
-    # costs = []
-    # seq_lengths = []
-    # start_ms = get_ms()
-
-    data = []
+    costs = []
+    seq_lengths = []
+    start_ms = get_ms()
     for batch_num, x, y in model.dataloader:
-        data.append((batch_num, x, y))
-
-    for batch_num, x, y in data:
-        print("batch num: {}".format(batch_num))
-        # inp_seq_len = x.size(0)
-        # outp_seq_len, batch_size, _ = y.size()
-        # model.net.init_sequence(batch_size)
-        #
-        # y_out = torch.zeros(y.size())
-        # for i in range(outp_seq_len):
-        #     y_out[i], _ = model.net(x[i])
-        #
-        # loss = model.criterion(y_out, y)
-        net = model.net
         inp_seq_len = x.size(0)
         outp_seq_len, batch_size, _ = y.size()
+        model.net.init_sequence(batch_size)
 
-        # New sequence
-        net.init_sequence(batch_size)
-
-        # Feed the sequence + delimiter
-        for i in range(inp_seq_len):
-            net(x[i])
-
-        # Read the output (no input given)
         y_out = torch.zeros(y.size())
         for i in range(outp_seq_len):
-            y_out[i], _ = net()
+            y_out[i], _ = model.net(x[i])
 
         loss = model.criterion(y_out, y)
-
         losses += [loss]
     with open('test_loss2.txt', "wb") as f:
         pk.dump(losses, f)

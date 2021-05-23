@@ -1,4 +1,4 @@
-"""MSSS NTM model."""
+"""COE NTM model."""
 import pickle as pk
 
 import torch
@@ -72,7 +72,7 @@ def encode(inarr):
     return torch.stack(result, dim=0)
 
 @attrs
-class MSSSParams(object):
+class COEParams(object):
     # specified = attrib(default=Factory(specified_param))
     # @TODO: change them when testing
     conf = Config()
@@ -85,7 +85,7 @@ class MSSSParams(object):
     batch_len = 1
     batch_num = total_data_size / batch_len
 
-    name = attrib(default="msss-task")
+    name = attrib(default="coe-task")
     controller_size = attrib(default=100, convert=int)
     controller_layers = attrib(default=conf.layer_size, convert=int)
     num_heads = attrib(default=1, convert=int)
@@ -122,8 +122,8 @@ def load_train_data():
     return train_data
 
 @attrs
-class MSSSModelTraining(object):
-    params = attrib(default=Factory(MSSSParams))
+class COEModelTraining(object):
+    params = attrib(default=Factory(COEParams))
     net = attrib()
     dataloader = attrib()
     criterion = attrib()
@@ -162,13 +162,13 @@ class MSSSModelTraining(object):
         return optim.Adam(self.net.parameters())
 
 def load_test2_data():
-    with open("data/test_var.txt", "rb") as f:
+    with open("data/test2.txt", "rb") as f:
         train_data = pk.load(f)
     return train_data
 
 @attrs
-class MSSSModelTesting2(object):
-    params = attrib(default=Factory(MSSSParams))
+class COEModelTesting2(object):
+    params = attrib(default=Factory(COEParams))
     net = attrib()
     dataloader = attrib()
     criterion = attrib()
@@ -214,8 +214,8 @@ def load_test_data():
     return train_data
 
 @attrs
-class MSSSModelTesting(object):
-    params = attrib(default=Factory(MSSSParams))
+class COEModelTesting(object):
+    params = attrib(default=Factory(COEParams))
     net = attrib()
     dataloader = attrib()
     criterion = attrib()

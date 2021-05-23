@@ -1,5 +1,9 @@
 import pickle as pk
+import math
 import random
+import sys,os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) 
+sys.path.append(BASE_DIR)
 
 from data.config import Config
 
@@ -9,82 +13,51 @@ low_bound = conf.get_low_bound()
 up_bound = conf.get_up_bound()
 eos = conf.get_eos()
 
+def check_odd_even(arr):
+    result = []
+    for i in range(len(arr)):
+        if (int(arr[i]) % 2) == 0:
+            # 1002 represents Even
+            result.append(1002)
+        else:
+            # 1001 represents Odd
+            result.append(1001)
+    return result
 
-# DP solution
-def mss(arr):
-    dp = []
-    dp.append(arr[0])
-    result = arr[0]
-    for i in range(1, len(arr)):
-        curr = max(dp[i - 1] + arr[i], arr[i])
-        dp.append(curr)
-        result = max(result, curr)
-    return [result]
-
-
-def input_generator(length):
+def arr_generator(length):
     arr = []
     elements = random.randint(1, length)
     for i in range(elements):
         arr.append(random.randint(low_bound, up_bound))
     return arr
 
-
 def fill_arr(arr, length):
     while len(arr) < length:
         arr.append(eos)
     arr.append(eos)
 
-
-def mss_generator(data_size, file, data_length):
+def data_generator(problem_size, data_file, data_length):
     input_data = []
     output_data = []
-    for i in range(data_size):
-        arr = input_generator(data_length)
-        result = mss(arr)
+    for i in range(problem_size):
+        arr = arr_generator(data_length)
+        result = check_odd_even(arr)
         fill_arr(arr, data_length)
         fill_arr(result, data_length)
         input_data.append(arr)
         output_data.append(result)
-    with open(file, "wb") as f:
+    with open(data_file, "wb") as f:
         pk.dump((input_data, output_data), f)
-
-
-# brute force solution
-def check_sum(arr, out, index):
-    seq = []
-    for num in arr:
-        if num == eos:
-            break
-        seq.append(num)
-    res = out[0]
-    maximum = seq[0]
-    for i in range(len(seq)):
-        curr = 0
-        for j in range(i, len(seq)):
-            curr += seq[j]
-            if curr > maximum:
-                maximum = curr
-    if res != maximum:
-        print("false at index {}".format(index))
-
-
-def check(file):
-    with open(file, "rb") as f:
-        (x, y) = pk.load(f)
-    length = len(x)
-    for i in range(length):
-        # check_sum(x[i], y[i], i)
-        print("{}, {}".format(x[i], y[i]))
-
 
 if __name__ == '__main__':
     train_file = "train.txt"
     test_file = "test.txt"
-    test_file_var = "test_var.txt"
-    mss_generator(conf.get_train_data_size(), train_file, conf.get_input_size())
-    mss_generator(conf.get_test_data_size(), test_file, conf.get_input_size())
-    mss_generator(conf.get_test_data_size(), test_file_var, conf.var_input_size)
-    # check(train_file)
-    # check(test_file)
-    # check(test_file_var)
+    test2_file = "test2.txt"
+    data_generator(conf.get_train_data_size(), train_file, conf.get_input_size())
+    data_generator(conf.get_test_data_size(), test_file, conf.get_input_size())
+    data_generator(conf.get_test_data_size(), test2_file, conf.var_input_size)
+    
+
+
+    
+

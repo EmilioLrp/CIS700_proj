@@ -25,12 +25,12 @@ LOGGER = logging.getLogger(__name__)
 
 # from tasks.copytask import CopyTaskModelTraining, CopyTaskParams
 # from tasks.repeatcopytask import RepeatCopyTaskModelTraining, RepeatCopyTaskParams
-from tasks.msss import MSSSModelTraining, MSSSParams
+from tasks.coe import COEModelTraining, COEParams
 
 TASKS = {
     # 'copy': (CopyTaskModelTraining, CopyTaskParams),
     # 'repeat-copy': (RepeatCopyTaskModelTraining, RepeatCopyTaskParams)
-    'msss': (MSSSModelTraining, MSSSParams)
+    'coe': (COEModelTraining, COEParams)
 }
 
 # Default values for program arguments
@@ -227,8 +227,8 @@ def train_model(model, args):
 def init_arguments():
     parser = argparse.ArgumentParser(prog='train.py')
     parser.add_argument('--seed', type=int, default=RANDOM_SEED, help="Seed value for RNGs")
-    parser.add_argument('--task', action='store', choices=list(TASKS.keys()), default='msss',
-                        help="Choose the task to train (default: msss)")
+    parser.add_argument('--task', action='store', choices=list(TASKS.keys()), default='coe',
+                        help="Choose the task to train (default: coe)")
     parser.add_argument('-p', '--param', action='append', default=[],
                         help='Override model params. Example: "-pbatch_size=4 -pnum_heads=2"')
     parser.add_argument('--checkpoint-interval', type=int, default=CHECKPOINT_INTERVAL,
