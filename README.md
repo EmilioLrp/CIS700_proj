@@ -2,7 +2,7 @@
 This is the repository of the sorce code for CIS 700 Neural Program Learning's semester project. The purpose of this project is to use the architecture of NTM to solve 4 different tasks. Each team member is correpond to one task alone. The task may came from internet and it may varies from its original version. 
 This project is modified from the original project at [here](https://github.com/loudinthecloud/pytorch-ntm).
 
-## Instructeor 
+## Instructor
 * Dr. Garrett Katz(gkatz01@syr.edu)
 
 ## Contributors and corresponding tasks
@@ -23,7 +23,7 @@ This project is modified from the original project at [here](https://github.com/
 In order to run this project, please make sure that the hosting machine having a python3 installed. Being able to build a virtual environment or any other isolated environment is preferred since some of the packages that this project used may not be the most up to date version.
 
 ## Dependencies installation
-Again it is highly recommended to install an isolated invironment. This instruction assuems the installation happends in virtual environment.
+Again it is highly recommended to install an isolated environment. This instruction assume the installation happens in virtual environment.
 
 First, activate virtual environment. Then go to the root folder of the project, where the `requirements.txt` is located. Execute the following command:
 
@@ -34,7 +34,7 @@ pip install -r requirements.txt
 There may be issues regarding different package name and versions accross different OS, in that case, please make sure that the following packages are properlly installed:
 
 * attrs==19.1.0
-* matplotlib==3.3.4
+* matplotlib
 * numpy==1.19.5
 * torch==1.8.1
 
@@ -84,9 +84,9 @@ Some configurations can be accessed and modified via `CIS700_proj/data/config.py
 * EOS's representation, make sure that this representation cannot be accessed by all possible elements in input and output
 * Size of input
 * Encoding length of each element both input and output (an unsigned integer's binary representation)
-* Threashold for encoding. (Shift the encoding data to non-negateive)
+* Threshold for encoding. (Shift the encoding data to non-negative)
 * Training, testing and variate testing data size
-* A portion of nerual network configuration
+* A portion of neural network configuration
 
 Other configs of the model needs to be accessed within the code.
 
